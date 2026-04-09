@@ -10,7 +10,18 @@ export const recipesApi = createApi({
     getRecipeById: builder.query({
       query: (id) => `lookup.php?i=${id}`,
     }),
+    filterByIngredient: builder.query({
+      query: (ingredient) => `filter.php?i=${encodeURIComponent(ingredient)}`,
+    }),
+    filterByArea: builder.query({
+      query: (area) => `filter.php?a=${encodeURIComponent(area)}`,
+    }),
   }),
 });
 
-export const { useGetSeafoodListQuery, useGetRecipeByIdQuery } = recipesApi;
+export const {
+  useGetSeafoodListQuery,
+  useGetRecipeByIdQuery,
+  useFilterByIngredientQuery,
+  useFilterByAreaQuery,
+} = recipesApi;
