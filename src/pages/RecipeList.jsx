@@ -32,15 +32,20 @@ function RecipeList() {
   };
 
   if (isLoading && !seafoodData) return (
-    <div className="status-msg"><span className="loader"></span> Loading recipes…</div>
+    <div className="status-msg">
+      <span className="loader"></span>
+      Loading recipes…
+    </div>
   );
   if (isError) return (
-    <div className="status-msg error">❌ Failed to load recipes. Please try again.</div>
+    <div className="status-msg error">
+      ❌ Failed to load recipes. Please check your connection and try again.
+    </div>
   );
 
   const allMeals = seafoodData?.meals || [];
 
-  // Area filter: cross-reference with seafood list
+  // Area filter: cross-reference with seafood list by meal ID
   let areaFiltered = allMeals;
   if (doArea) {
     if (areaFetching) {
@@ -51,7 +56,7 @@ function RecipeList() {
     }
   }
 
-  
+  // Search filter: case-insensitive match on meal name
   const filtered = search.trim()
     ? areaFiltered.filter((m) =>
         m.strMeal.toLowerCase().includes(search.toLowerCase())
@@ -59,13 +64,15 @@ function RecipeList() {
     : areaFiltered;
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const safePage = Math.min(currentPage, totalPages || 1);
   const paginated = filtered.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (safePage - 1) * ITEMS_PER_PAGE,
+    safePage * ITEMS_PER_PAGE
   );
 
   return (
     <section className="recipe-list-page">
+      {/* Hero Banner */}
       <div className="hero-banner">
         <div className="hero-text">
           <h2>Explore Seafood Recipes</h2>
@@ -73,25 +80,37 @@ function RecipeList() {
         </div>
       </div>
 
+      {/* Search + Filter Controls */}
       <div className="controls-row">
         <SearchBar value={search} onChange={handleSearch} />
         <AreaFilter value={area} onChange={handleArea} />
       </div>
 
+      {/* Results */}
       {areaFetching && doArea ? (
-        <div className="status-msg"><span className="loader"></span> Filtering…</div>
+        <div className="status-msg">
+          <span className="loader"></span> Filtering by region…
+        </div>
       ) : filtered.length === 0 ? (
         <div className="empty-state">
           <span className="empty-icon">🔍</span>
-          <p>No recipes found{search ? ` for "${search}"` : ''}.</p>
-          <button className="clear-btn" onClick={() => { handleSearch(''); handleArea('All'); }}>
-            Clear filters
+          <p>
+            No recipes found
+            {search ? ` for "${search}"` : ''}
+            {area !== 'All' ? ` in ${area}` : ''}.
+          </p>
+          <button
+            className="clear-btn"
+            onClick={() => { handleSearch(''); handleArea('All'); }}
+          >
+            Clear all filters
           </button>
         </div>
       ) : (
         <>
           <p className="results-count">
             Showing <strong>{paginated.length}</strong> of <strong>{filtered.length}</strong> seafood recipes
+            {area !== 'All' && <> · <em>{area}</em></>}
           </p>
           <div className="recipe-grid">
             {paginated.map((meal) => (
@@ -99,7 +118,7 @@ function RecipeList() {
             ))}
           </div>
           <Pagination
-            currentPage={currentPage}
+            currentPage={safePage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           />
