@@ -1,3 +1,12 @@
+# My Recipe App - Interim Project
+
+## Team Members
+* **Baculo, Jasmine Paula**
+* **Herbilla, Jona Marie**
+* **Prez, Jan Chelcee**
+* **Rioflorido, Cindy Lou**
+* **Victoria, Christian**
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
